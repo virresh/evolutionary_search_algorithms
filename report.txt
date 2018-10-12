@@ -1,0 +1,64 @@
+---
+title: Artificial Intelligence Programming Assignment 2 
+author: Viresh Gupta | Roll No. - 2016118
+date: 12 October 2018
+
+---
+
+##  Q1. User vs Computer TicTacToe with min-max and alpha-beta pruning  
+###  Methodology:  
+Both min-max and alpha-beta pruning have been implemented with no randomisation.
+i.e if at any point, there are two states with the same utility value, the algorithm will choose
+the state that occurs first.  
+
+No memoization is done, so the computer calculates all steps everytime.
+
+By default, the computer uses only min-max strategy without alpha-beta pruning. To use alpha-beta
+pruning, pass the `--alphabeta` switch.
+
+#### Usage:
+To use the program and play against it, type:
+```bash
+python PA2_2016118_Viresh_Gupta_minmax.py
+```
+To give input from a file instead of choosing steps interactively:
+```bash
+python PA2_2016118_Viresh_Gupta_minmax.py < user_moves.txt
+```
+To use alpha-beta pruning, use:
+```bash
+python PA2_2016118_Viresh_Gupta_minmax.py --alphabeta
+```
+
+### Experiments:
+I calculated the time taken for each algorithm, by using the unix `time` command.
+e.g
+```bash
+time python PA2_2016118_Viresh_Gupta_minmax.py < user_moves.txt
+time python PA2_2016118_Viresh_Gupta_minmax.py --alphabeta < user_moves.txt
+```
+
+### Observations:
+
++---------+----------+-------------+
+| time    | Min-Max  | Alpha-Beta  |
++=========+==========+=============+
+|real     | 0m 1.293s| 0m 0.132s   |
++----------------------------------+
+|user     | 0m 1.280s| 0m 0.109s   |
++----------------------------------+
+|sys      | 0m 0.012s| 0m 0.020s   |
++----------------------------------+
+
+### Inference:
+Thus, we can observe that the time taken when using alpha-beta pruning strategy for making a decision is considerably smaller, and
+the alpha-beta strategy is giving a big boost to the decision making (~ 10 times).
+
+##  Q2. Course time scheduling using CSPs and GAs / MAs
+
+a. Logical constraints on the given problem:  
+    - No professor is teaching at two places at a time.
+    - Only one course is taught at a venue at a time.
+    - A course has class only once a week, in one of the given time slots
+    - The institute is a basic CS institute, where each professor has knowledge of each domain, so
+      they can teach any course floated at the institute.
