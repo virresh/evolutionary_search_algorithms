@@ -67,8 +67,17 @@ def select_parents(population, fitness, num_select=5):
 		fitness[most_fit[0][0]] = -1
 	return selected
 
-# def do_crossovers(parents):
-	# 
+def do_crossovers(parents, num_offsprings=10):
+	offsprings = []
+	for i in range(num_offsprings):
+		parent1 = parents[i%len(parents)]
+		parent2 = parents[(i+1)%len(parents)]
+		offspring = np.empty(parents[0].shape)
+		cross_point = np.random.randint(1, offspring.shape[1]-1)
+		offspring[:,:cross_point] = parent1[:, :cross_point]
+		offspring[:,cross_point:] = parent2[:, cross_point:]
+		offsprings.append(offspring)
+	return offsprings
 
 def main():
 	num_generations = 1
@@ -98,3 +107,9 @@ def main():
 
 if __name__ == '__main__':
 	main()
+	# parents = [get_chromosome(), get_chromosome()]
+	# print(parents)
+	# offsprings = do_crossovers(parents, num_offsprings=2)
+	# print(offsprings)
+	# for offspring in offsprings:
+	# 	print(get_fitness(offspring))
