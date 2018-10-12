@@ -54,11 +54,84 @@ time python PA2_2016118_Viresh_Gupta_minmax.py --alphabeta < user_moves.txt
 Thus, we can observe that the time taken when using alpha-beta pruning strategy for making a decision is considerably smaller, and
 the alpha-beta strategy is giving a big boost to the decision making (~ 10 times).
 
-##  Q2. Course time scheduling using CSPs and GAs / MAs
+------------------------------------------
 
-a. Logical constraints on the given problem:  
-    - No professor is teaching at two places at a time.
-    - Only one course is taught at a venue at a time.
-    - A course has class only once a week, in one of the given time slots
-    - The institute is a basic CS institute, where each professor has knowledge of each domain, so
-      they can teach any course floated at the institute.
+##  Q2. Course time scheduling using GAs , MAs and CSPs
+
+### a. Logical constraints on the given problem:  
+Various logical constraints that I have taken on the problem are:
+
+- No professor is teaching at two places at a time.
+- Only one course is taught at a venue at a time.
+- A course has class only once a week, in one of the given time slots
+- The institute is a basic CS institute, where each professor has knowledge of each domain, so
+  they can teach any course floated at the institute.
+
+### b. Implementations using Genetic and Memetic learning
+
+#### Methodology:
+I take up five parameters for a gene:
+
+- Day of week (1-5)
+- Slot of day (1-8)
+- Hall number (1-N)
+- Course number (1-M)
+- Professor id (1-P)
+
+A gene completely determines a course's slot in that week, since there is only one class per course in a week.  
+
+A chromosome is thus comprised of M genes, one for each course, and this determines the schedule for the week.  
+
+#### Usage:
+
+The code can be simply run as 
+```
+python PA2_2016118_VireshGupta_GA.py
+```
+
+#### Experiments and Observation:
+
+I tested the GA implementation with 50 courses, 10 professors and 10 halls.
+Thus with 50 (> 8 * 5 = 40) courses, the initial population is expected to have some small number
+of clashes, since naively putting every course in every slot won't work.  
+
+Crossovers are single point rectangular crossovers, (one cut in the horizontal direction, 
+swap and join, and then one cut in the vertical direction, then swap).  
+
+Mutations are complete eradicatory, a chromosome that undergoes a mutation can be disrupted and replaced with a
+fully randomised chromosome, or just the (hall, professor, course) combination gets randomised in a chromosome.
+
+A sample run of my GA implementation:
+```
+generation #0 census 15 Best of this generation  0.3332555736994701 clash val 6
+generation #1 census 24 Best of this generation  0.4998000799680128 clash val 4
+generation #2 census 33 Best of this generation  0.4998000799680128 clash val 4
+generation #3 census 42 Best of this generation  0.4998000799680128 clash val 4
+generation #4 census 51 Best of this generation  0.4998000799680128 clash val 4
+generation #5 census 19 Best of this generation  0.4998000799680128 clash val 4
+generation #6 census 28 Best of this generation  0.4998000799680128 clash val 4
+generation #7 census 37 Best of this generation  0.4998000799680128 clash val 4
+generation #8 census 46 Best of this generation  0.4998000799680128 clash val 4
+generation #9 census 55 Best of this generation  0.4998000799680128 clash val 4
+generation #10 census 19 Best of this generation  0.4998000799680128 clash val 4
+generation #11 census 28 Best of this generation  0.4998000799680128 clash val 4
+generation #12 census 37 Best of this generation  0.4998000799680128 clash val 4
+generation #13 census 46 Best of this generation  0.4998000799680128 clash val 4
+generation #14 census 55 Best of this generation  0.4998000799680128 clash val 4
+generation #15 census 19 Best of this generation  1250.0 clash val 0
+generation #16 census 28 Best of this generation  1250.0 clash val 0
+generation #17 census 37 Best of this generation  1250.0 clash val 0
+generation #18 census 46 Best of this generation  1666.6666666666667 clash val 0
+generation #19 census 55 Best of this generation  1666.6666666666667 clash val 0
+```
+
+#### Observations:
+The initial population has around 6 clashes in the most fit schedule, and with generations passing by, we
+get better results.  
+By $15^{th}$ generation, we get 0 clashes and by $19^{th}$ generation we have improvised upon this schedule even
+further.
+
+#### Inference:
+We can infer that GAs often suffer from the problem that the population is not improving after each generation, it may
+happen that a single most chromosome is the best one out of all the rest and thus it persists for a lot of generations
+before a mutation occurs and leads to a better solution.
