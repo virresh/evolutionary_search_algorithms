@@ -1,3 +1,4 @@
+import argparse
 import numpy as np
 from math import ceil, log10
 
@@ -9,21 +10,25 @@ from math import ceil, log10
 # professor	: 1-P
 # A chromosome is a combination of M genes (so that every course has a staff)
 
+DEFAULT_DAYS = 5
+DEFAULT_SLOTS = 8
 DEFAULT_M = 50
 DEFAULT_P = 10
 DEFAULT_N = 10
 
-def get_chromosome(num_days=5, num_slots=8, N=DEFAULT_N, M=DEFAULT_M, P=DEFAULT_P):
+use_memetic = False
+
+def get_chromosome(num_days=DEFAULT_DAYS, num_slots=DEFAULT_SLOTS, N=DEFAULT_N, M=DEFAULT_M, P=DEFAULT_P):
 	a = np.random.randint(1, num_days+1, M)
 	b = np.random.randint(1, num_slots+1, M)
 	c = np.random.randint(1, N+1, M)
 	# d = np.random.randint(1, M+1, M)
-	d = np.random.permutation(M)+1
+	d = np.random.permutation(M) + 1
 	e = np.random.randint(1, P+1, M)
 	chromosome = np.vstack((a,b,c,d,e))
 	return chromosome
 
-def get_fitness(chromosome, get_clash=False, debug=False, num_days=5, num_slots=8, N=DEFAULT_N, M=DEFAULT_M, P=DEFAULT_P):
+def get_fitness(chromosome, get_clash=False, debug=False, num_days=DEFAULT_DAYS, num_slots=DEFAULT_SLOTS, N=DEFAULT_N, M=DEFAULT_M, P=DEFAULT_P):
 	fitness = 0
 	free_profs = P - len(np.unique(chromosome[4]))
 	free_slots = 0
@@ -73,7 +78,24 @@ def select_parents(population, fitness, num_select=10):
 	selected = []
 	for i in range(num_select):
 		most_fit = np.where(fitness == np.max(fitness))
-		selected.append(population[most_fit[0][0]])
+		chx = population[most_fit[0][0]]
+		if use_memetic:
+			# do a hill climbing on the nearby chromosomes of the selected parent
+			for k in range(6):
+				if k%2==0:
+					chx2 = chx.copy()
+					chx2[0, :] = np.random.permutation(chx2[0, :])
+					chx2[1, :] = np.random.permutation(chx2[1, :])
+					chx2[2, :] = np.random.permutation(chx2[2, :])
+					chx2[3, :] = np.random.permutation(chx2[3, :])
+					chx2[4, :] = np.random.permutation(chx2[4, :])
+				else:
+					chx2 = chx.copy()
+					chx2 = mutate(chx2)
+				if get_fitness(chx) < get_fitness(chx2):
+					chx = chx2
+					break
+		selected.append(chx)
 		fitness[most_fit[0][0]] = -1
 	return selected
 
@@ -93,48 +115,52 @@ def do_crossovers(parents, num_offsprings=9):
 		offsprings.append(offspring)
 	return offsprings
 
+def mutate(chromosome, chanceA=0.5, chanceB=0.5):
+	if np.random.uniform(0,1) < chanceA:
+		chromosome = get_chromosome()
+	elif np.random.uniform(0,1) < chanceB:
+		chromosome[2, :] = np.random.randint(1, DEFAULT_N+1, DEFAULT_M)
+		chromosome[3, :] = np.random.permutation(DEFAULT_M) + 1
+		chromosome[4, :] = np.random.randint(1, DEFAULT_P+1, DEFAULT_M)
+	return chromosome
+
 def do_mutate(sub_pop, chance=0.5):
 	for i in range(len(sub_pop)):
-		if np.random.uniform(0,1) < chance:
-			sub_pop[i] = get_chromosome()
-		elif np.random.uniform(0,1) < chance:
-			sub_pop[i][2, :] = np.random.randint(1, DEFAULT_N+1, DEFAULT_M)
-			sub_pop[i][3, :] = np.random.permutation(DEFAULT_M)+1
-			sub_pop[i][4, :] = np.random.randint(1, DEFAULT_P+1, DEFAULT_M)
+		sub_pop[i] = mutate(sub_pop[i], chanceA=chance, chanceB=chance)
 
-def main():
-	num_generations = 20
+def main(itrs=20):
+	num_generations = itrs
 	population = []
 	max_pop = 50
 	# generate initial population
 	for i in range(15):
 		chx = get_chromosome()
 		population.append(chx)
-	# print(population)
+
 	best_schedule = None
 
 	for generation in range(num_generations):
 		print('generation #'+str(generation), 'census', len(population), end=' ')
 		fitness = np.empty(len(population))
-		# Number of iterations for GA
+
 		# Steps:
 		# 	1) Calculate fitness
-		#	2) Select most fit parents
-		#	3) Generate offsprings via crossover
-		# 	4) Induce mutations in offspring
-		# 	5) Add new offsprings to the population
 		for i in range(len(population)):
 			fitness[i] = get_fitness(population[i])
-		# print(fitness)
+		
+		#	2) Select most fit parents
 		selected = select_parents(population, fitness)
 
+		#	3) Generate offsprings via crossover
 		child = do_crossovers(selected)
 
+		# 	4) Induce mutations in offspring
 		do_mutate(child)
 
 		if len(population) > max_pop:
 			population = selected
 
+		# 	5) Add new offsprings to the population
 		population.extend(child)
 
 		best_fit = 0
@@ -152,10 +178,9 @@ def main():
 	# get_fitness(best_schedule, debug=True)
 
 if __name__ == '__main__':
-	main()
-	# parents = [get_chromosome(), get_chromosome()]
-	# print(parents)
-	# offsprings = do_crossovers(parents, num_offsprings=2)
-	# print(offsprings)
-	# for offspring in offsprings:
-	# 	print(get_fitness(offspring))
+	parser = argparse.ArgumentParser()
+	parser.add_argument("--ma", help='Whether to use memetic algorithm or simple GA', action='store_true')
+	parser.add_argument("-i", "--iterations", help='Number of generations to consider', type=int, default=20)
+	args = parser.parse_args()
+	use_memetic = args.ma
+	main(args.iterations)

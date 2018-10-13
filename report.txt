@@ -82,11 +82,16 @@ A gene completely determines a course's slot in that week, since there is only o
 
 A chromosome is thus comprised of M genes, one for each course, and this determines the schedule for the week.  
 
-#### Usage:
+##### Usage:
 
-The code can be simply run as 
+The code for GA can be run as:
 ```
-python PA2_2016118_VireshGupta_GA.py
+python PA2_2016118_VireshGupta_GA_MA.py
+```
+
+The code for MA can be run as:
+```
+python PA2_2016118_VireshGupta_GA_MA.py --ma
 ```
 
 #### Experiments and Observation:
@@ -98,8 +103,12 @@ of clashes, since naively putting every course in every slot won't work.
 Crossovers are single point rectangular crossovers, (one cut in the horizontal direction, 
 swap and join, and then one cut in the vertical direction, then swap).  
 
-Mutations are complete eradicatory, a chromosome that undergoes a mutation can be disrupted and replaced with a
-fully randomised chromosome, or just the (hall, professor, course) combination gets randomised in a chromosome.
+Mutations are completely eradicatory, a chromosome that undergoes a mutation can be disrupted and replaced with a
+fully randomised chromosome, or just the (hall, professor, course) combination gets randomised in a chromosome.  
+
+For memetic algorithm, the hillclimbing permutes the chromosome genes across properties to evaluate a nearby
+chromosome, thus leading to better parent selection before crossovers.  
+This has significant benefits over GAs in terms of faster convergence to a valid schedule.  
 
 A sample run of my GA implementation:
 ```
@@ -123,6 +132,30 @@ generation #16 census 28 Best of this generation  1250.0 clash val 0
 generation #17 census 37 Best of this generation  1250.0 clash val 0
 generation #18 census 46 Best of this generation  1666.6666666666667 clash val 0
 generation #19 census 55 Best of this generation  1666.6666666666667 clash val 0
+```
+
+A sample run of my MA implementation:
+```
+generation #0 census 15 Best of this generation  0.49972515116685823 clash val 4
+generation #1 census 24 Best of this generation  0.4998000799680128 clash val 4
+generation #2 census 33 Best of this generation  0.4998000799680128 clash val 4
+generation #3 census 42 Best of this generation  0.4998000799680128 clash val 4
+generation #4 census 51 Best of this generation  0.9993004896572399 clash val 2
+generation #5 census 19 Best of this generation  0.9993004896572399 clash val 2
+generation #6 census 28 Best of this generation  1000.0 clash val 0
+generation #7 census 37 Best of this generation  1000.0 clash val 0
+generation #8 census 46 Best of this generation  1000.0 clash val 0
+generation #9 census 55 Best of this generation  1000.0 clash val 0
+generation #10 census 19 Best of this generation  1000.0 clash val 0
+generation #11 census 28 Best of this generation  1000.0 clash val 0
+generation #12 census 37 Best of this generation  1000.0 clash val 0
+generation #13 census 46 Best of this generation  1000.0 clash val 0
+generation #14 census 55 Best of this generation  1000.0 clash val 0
+generation #15 census 19 Best of this generation  1000.0 clash val 0
+generation #16 census 28 Best of this generation  1000.0 clash val 0
+generation #17 census 37 Best of this generation  1250.0 clash val 0
+generation #18 census 46 Best of this generation  1250.0 clash val 0
+generation #19 census 55 Best of this generation  1250.0 clash val 0
 ```
 
 #### Observations:
