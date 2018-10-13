@@ -68,7 +68,7 @@ def get_fitness(chromosome, get_clash=False, debug=False, num_days=DEFAULT_DAYS,
 	clash_total = prof_clash + venue_clash + course_changed_instructor + course_exceed_max_class
 	# print(prof_clash, venue_clash, course_exceed_max_class, course_changed_instructor)
 	unfitness = free_profs + free_slots + clash_total * CLASH_PENALTY
-	fitness = NORMALISING_FACTOR * 1/unfitness
+	fitness = NORMALISING_FACTOR * 1/unfitness if unfitness != 0 else NORMALISING_FACTOR
 	# print(unfitness)
 	if get_clash:
 		return (fitness, clash_total)
