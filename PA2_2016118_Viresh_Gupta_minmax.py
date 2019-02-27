@@ -1,11 +1,10 @@
-#!/usr/bin/python3
 import argparse
 import copy
 import sys
 
 INF = 100
 NEG_INF = -100
-
+num_expanded = 0
 
 class GameBoard(object):
 
@@ -25,10 +24,12 @@ class GameBoard(object):
             print('')
 
     def get_states(self, player):
+        global num_expanded
         # states = []
         for i in range(0,3):
             for j in range(0,3):
                 if self.board[i][j] == '.':
+                    num_expanded +=1
                     state = GameBoard()
                     state.board = copy.deepcopy(self.board)
                     state.board[i][j] = player
@@ -161,3 +162,4 @@ if __name__ == '__main__':
     parser.add_argument("--alphabeta", help='Whether to use alpha beta pruning or not', action='store_true')
     args = parser.parse_args()
     main(alpha_beta=args.alphabeta)
+    print(num_expanded)
